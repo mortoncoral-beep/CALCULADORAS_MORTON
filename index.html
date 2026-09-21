@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Columnas de Acero NTC-2023 | RCDF México</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-code { font-family: 'JetBrains Mono', monospace; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: #ffffff !important; color: #000000 !important; }
+            #printArea { background: #ffffff !important; color: #000000 !important; }
+            .print-card { border: 1px solid #000000 !important; box-shadow: none !important; background: #ffffff !important; color: #000000 !important; }
+        }
+        @media screen {
+            .print-only { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header principal -->
+    <header class="bg-dark-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-4 lg:px-8 py-3.5 no-print">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-brand-600/20 border border-brand-500/40 text-brand-500 rounded-xl">
+                    <i class="fa-solid fa-layer-group text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-bold text-lg text-white tracking-tight">ColumnaAcero NTC-2023</h1>
+                        <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-brand-500/10 text-brand-500 border border-brand-500/30 rounded-full">CDMX RCDF</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Diseño a Compresión Axial según Normas Técnicas Complementarias de Acero</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="abrirModalMemoria()" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-brand-600 hover:bg-brand-500 text-white transition flex items-center gap-2 shadow-lg shadow-brand-600/20 active:scale-95">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    Memoria de Cálculo
+                </button>
+                <button onclick="resetearValores()" class="p-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition" title="Reiniciar datos">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
+
+        <!-- PANEL IZQUIERDO: FORMULARIO DE ENTRADA (5 Cols) -->
+        <section class="lg:col-span-5 space-y-5">
+            
+            <!-- TARJETA 1: SELECCIÓN DE PERFIL -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 shadow-lg space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-cubes text-brand-500"></i>
+                        1. Perfil Estructural
+                    </h2>
+                    <span class="text-xs text-slate-400">Sección IR</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Modo de Selección</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="btnModeDB" onclick="setProfileMode('db')" class="py-1.5 px-3 text-xs font-medium rounded-lg border bg-brand-600/20 border-brand-500/50 text-brand-400">
+                                Catálogo IR
+                            </button>
+                            <button id="btnModeCustom" onclick="setProfileMode('custom')" class="py-1.5 px-3 text-xs font-medium rounded-lg border bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200">
+                                Personalizado
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DB Selection -->
+                    <div id="dbSelectionBox" class="space-y-2">
+                        <label class="block text-xs font-medium text-slate-300">Buscar Perfil Comercial IR</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+                            <input type="text" id="profileSearch" oninput="filterProfiles()" placeholder="Ej. IR 305x74.4 o IR 203..." class="w-full bg-slate-950 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 font-code">
+                        </div>
+                        <select id="profileSelect" onchange="onSelectProfile()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500 font-code">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Custom Profile Inputs (Clean formatting, no math syntax errors) -->
+                    <div id="customProfileBox" class="hidden grid grid-cols-2 gap-2.5 pt-2 border-t border-slate-800">
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Área <i>A<sub>g</sub></i> (cm²)</label>
+                            <input type="number" id="inpAg" step="0.1" value="94.8" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Peralte total <i>d</i> (cm)</label>
+                            <input type="number" id="inpD" step="0.1" value="31.0" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Ancho patín <i>b<sub>f</sub></i> (cm)</label>
+                            <input type="number" id="inpBf" step="0.1" value="20.5" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Espesor patín <i>t<sub>f</sub></i> (cm)</label>
+                            <input type="number" id="inpTf" step="0.01" value="1.63" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Espesor alma <i>t<sub>w</sub></i> (cm)</label>
+                            <input type="number" id="inpTw" step="0.01" value="0.94" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Radio giro <i>r<sub>x</sub></i> (cm)</label>
+                            <input type="number" id="inpRx" step="0.01" value="13.2" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Radio giro <i>r<sub>y</sub></i> (cm)</label>
+                            <input type="number" id="inpRy" step="0.01" value="4.98" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-300 mb-1 font-medium">Peso lineal (kg/m)</label>
+                            <input type="number" id="inpPeso" step="0.1" value="74.4" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-code focus:border-brand-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Resumen rápido de propiedades mecánicas seleccionadas -->
+                    <div class="bg-slate-950/70 border border-slate-800 rounded-lg p-2.5 grid grid-cols-4 gap-2 text-center text-xs">
+                        <div>
+                            <span class="block text-[10px] text-slate-500"><i>A<sub>g</sub></i></span>
+                            <span id="dispAg" class="font-code font-semibold text-slate-200">-</span> <span class="text-[9px] text-slate-500">cm²</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-slate-500"><i>r<sub>x</sub></i></span>
+                            <span id="dispRx" class="font-code font-semibold text-slate-200">-</span> <span class="text-[9px] text-slate-500">cm</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-slate-500"><i>r<sub>y</sub></i></span>
+                            <span id="dispRy" class="font-code font-semibold text-slate-200">-</span> <span class="text-[9px] text-slate-500">cm</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-slate-500">Peso</span>
+                            <span id="dispPeso" class="font-code font-semibold text-slate-200">-</span> <span class="text-[9px] text-slate-500">kg/m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 2: MATERIAL Y CARGA -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 shadow-lg space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-weight-hanging text-brand-500"></i>
+                        2. Material y Solicitación
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Tipo de Acero</label>
+                        <select id="steelGrade" onchange="onSteelGradeChange()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                            <option value="3515" selected>ASTM A992 (<i>F<sub>y</sub></i> = 3,515 kg/cm²)</option>
+                            <option value="2530">ASTM A36 (<i>F<sub>y</sub></i> = 2,530 kg/cm²)</option>
+                            <option value="3450">ASTM A572 Gr.50 (<i>F<sub>y</sub></i> = 3,450 kg/cm²)</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Fluencia <i>F<sub>y</sub></i> (kg/cm²)</label>
+                        <input type="number" id="inpFy" value="3515" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white font-code focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Carga Axial Última <i>P<sub>u</sub></i> (Toneladas)</label>
+                        <div class="relative">
+                            <input type="number" id="inpPu" step="0.1" value="120.0" oninput="calcular()" class="w-full bg-slate-950 border border-slate-700 rounded-lg pl-3 pr-12 py-2 text-sm text-brand-400 font-bold font-code focus:outline-none focus:border-brand-500">
+                            <span class="absolute right-3 top-2.5 text-xs font-bold text-slate-500">Ton</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 3: CONDICIONES DE LONGITUD Y APOYO -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-4 shadow-lg space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+                    <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-ruler-vertical text-brand-500"></i>
+                        3. Pandeo Global y Longitudes
+                    </h2>
+                </div>
+
+                <!-- Presets Rápidos de K -->
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1.5">Presets Teóricos para Factor <i>K</i></label>
+                    <div class="grid grid-cols-4 gap-1.5 text-[10px]">
+                        <button onclick="setKPreset(0.65)" class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300 text-center">
+                            <span class="font-bold block text-slate-100">0.65</span>
+                            Emp.-Emp.
+                        </button>
+                        <button onclick="setKPreset(0.80)" class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300 text-center">
+                            <span class="font-bold block text-slate-100">0.80</span>
+                            Emp.-Art.
+                        </button>
+                        <button onclick="setKPreset(1.00)" class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300 text-center">
+                            <span class="font-bold block text-slate-100">1.00</span>
+                            Art.-Art.
+                        </button>
+                        <button onclick="setKPreset(2.10)" class="p-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-slate-300 text-center">
+                            <span class="font-bold block text-slate-100">2.10</span>
+                            Voladizo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <!-- Eje X -->
+                    <div class="bg-slate-950/60 p-3 border border-slate-800 rounded-lg space-y-2">
+                        <span class="block text-xs font-bold text-brand-400 border-b border-slate-800 pb-1">Eje Fuerte (X-X)</span>
+                        <div>
+                            <label class="block text-[10px] text-slate-400">Longitud <i>L<sub>x</sub></i> (m)</label>
+                            <input type="number" id="inpLx" step="0.1" value="5.00" oninput="calcular()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-code">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400">Factor <i>K<sub>x</sub></i></label>
+                            <input type="number" id="inpKx" step="0.05" value="1.00" oninput="calcular()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-code">
+                        </div>
+                    </div>
+
+                    <!-- Eje Y -->
+                    <div class="bg-slate-950/60 p-3 border border-slate-800 rounded-lg space-y-2">
+                        <span class="block text-xs font-bold text-brand-400 border-b border-slate-800 pb-1">Eje Débil (Y-Y)</span>
+                        <div>
+                            <label class="block text-[10px] text-slate-400">Longitud <i>L<sub>y</sub></i> (m)</label>
+                            <input type="number" id="inpLy" step="0.1" value="5.00" oninput="calcular()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-code">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400">Factor <i>K<sub>y</sub></i></label>
+                            <input type="number" id="inpKy" step="0.05" value="1.00" oninput="calcular()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white font-code">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- PANEL DERECHO: RESULTADOS Y DIAGNÓSTICO (7 Cols) -->
+        <section class="lg:col-span-7 space-y-5">
+            
+            <!-- TARJETA STATUS PRINCIPAL -->
+            <div id="statusCard" class="bg-dark-900 border border-slate-800 rounded-xl p-5 shadow-xl relative overflow-hidden transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Estado de Diseño (NTC-2023)</span>
+                        <div class="flex items-center gap-3">
+                            <span id="statusBadge" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-check"></i>
+                                SATISFACTORIO
+                            </span>
+                            <span id="governingAxisBadge" class="text-xs text-slate-300 font-mono bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
+                                Eje Crítico: Y-Y
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="text-left sm:text-right">
+                        <span class="text-xs text-slate-400 block">Aprovechamiento &eta;</span>
+                        <span id="dispEfficiencyText" class="text-3xl font-extrabold font-code text-white">0.0%</span>
+                    </div>
+                </div>
+
+                <!-- Barra de Progreso de Eficiencia -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-[11px] text-slate-400 mb-1 font-mono">
+                        <span><i>P<sub>u</sub></i> = <span id="dispPuText">0</span> Ton</span>
+                        <span><i>P<sub>Rc</sub></i> = <span id="dispPrcText">0</span> Ton</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                        <div id="efficiencyBar" class="h-full bg-emerald-500 transition-all duration-500 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA COMPARATIVA DE EJES DE PANDEO -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+                    <span><i class="fa-solid fa-chart-columns text-brand-500 mr-2"></i>Evaluación por Eje de Flexión</span>
+                    <span class="text-[10px] text-slate-500 font-normal">Factor de Resistencia <i>F<sub>c</sub></i> = 0.90</span>
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 font-mono text-[11px]">
+                                <th class="py-2 px-3">Parámetro</th>
+                                <th class="py-2 px-3 text-center">Eje X-X (Fuerte)</th>
+                                <th class="py-2 px-3 text-center">Eje Y-Y (Débil)</th>
+                                <th class="py-2 px-3 text-right">Efecto / Límite</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800 font-code">
+                            <tr>
+                                <td class="py-2.5 px-3 font-sans text-slate-300">Longitud Efectiva <i>K L</i></td>
+                                <td id="tblKlX" class="py-2.5 px-3 text-center text-slate-200">0 cm</td>
+                                <td id="tblKlY" class="py-2.5 px-3 text-center text-slate-200">0 cm</td>
+                                <td class="py-2.5 px-3 text-right text-slate-500 font-sans text-[11px]">Geometría</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-sans text-slate-300">Esbeltez Pandeo &lambda; = <i>K L / r</i></td>
+                                <td id="tblSlendernessX" class="py-2.5 px-3 text-center font-bold text-slate-200">0.0</td>
+                                <td id="tblSlendernessY" class="py-2.5 px-3 text-center font-bold text-slate-200">0.0</td>
+                                <td class="py-2.5 px-3 text-right text-slate-400 font-mono">&le; 200</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-sans text-slate-300">Esbeltez Normalizada &lambda;<sub>c</sub></td>
+                                <td id="tblLambdaCX" class="py-2.5 px-3 text-center text-slate-200">0.00</td>
+                                <td id="tblLambdaCY" class="py-2.5 px-3 text-center text-slate-200">0.00</td>
+                                <td class="py-2.5 px-3 text-right text-slate-500 font-sans text-[11px]">
+                                    <span class="text-[10px]">&lambda;<sub>c</sub> = (<i>K L</i>/&pi; <i>r</i>)&middot;&radic;(<i>F<sub>y</sub></i>/<i>E</i>)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-3 font-sans text-slate-300">Esfuerzo Crítico <i>F<sub>cr</sub></i></td>
+                                <td id="tblFcrX" class="py-2.5 px-3 text-center text-slate-200">0 kg/cm²</td>
+                                <td id="tblFcrY" class="py-2.5 px-3 text-center text-slate-200">0 kg/cm²</td>
+                                <td class="py-2.5 px-3 text-right text-slate-400 text-[10px]">Ecuación NTC</td>
+                            </tr>
+                            <tr class="bg-slate-950/40">
+                                <td class="py-2.5 px-3 font-sans font-bold text-slate-200">Resistencia de Diseño <i>P<sub>Rc</sub></i></td>
+                                <td id="tblPrcX" class="py-2.5 px-3 text-center font-bold text-brand-400">0 Ton</td>
+                                <td id="tblPrcY" class="py-2.5 px-3 text-center font-bold text-brand-400">0 Ton</td>
+                                <td class="py-2.5 px-3 text-right font-sans text-emerald-400 font-semibold"><i>F<sub>c</sub> A<sub>g</sub> F<sub>cr</sub></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TARJETA PANDEO LOCAL -->
+            <div class="bg-dark-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-3">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+                    <span><i class="fa-solid fa-compress text-brand-500 mr-2"></i>Revisión de Pandeo Local (Ancho-Espesor)</span>
+                    <span id="localBucklingStatus" class="text-[10px] px-2 py-0.5 rounded font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">COMPACTA / NO ESBELTA</span>
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-1">
+                    <!-- Elementos No Soportados (Patines) -->
+                    <div class="bg-slate-950/60 border border-slate-800 rounded-lg p-3 space-y-1.5">
+                        <div class="flex justify-between items-center text-slate-300 font-semibold">
+                            <span>Patín (No Soportado)</span>
+                            <span id="flangeBadge" class="text-[10px] text-emerald-400 font-mono">&lambda;<sub>f</sub> &le; &lambda;<sub>r</sub> (OK)</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400 font-code text-[11px]">
+                            <span>Relación &lambda;<sub>f</sub> = <i>b<sub>f</sub></i> / (2 <i>t<sub>f</sub></i>):</span>
+                            <span id="dispLambdaF" class="text-slate-200 font-bold">0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400 font-code text-[11px]">
+                            <span>Límite No Esbelto &lambda;<sub>r</sub>:</span>
+                            <span id="dispLambdaRf" class="text-slate-400">0.00</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 pt-1 border-t border-slate-800/80">Límite &lambda;<sub>r</sub> = 0.56 &radic;(<i>E / F<sub>y</sub></i>) para patines proyectados.</p>
+                    </div>
+
+                    <!-- Elementos Soportados (Alma) -->
+                    <div class="bg-slate-950/60 border border-slate-800 rounded-lg p-3 space-y-1.5">
+                        <div class="flex justify-between items-center text-slate-300 font-semibold">
+                            <span>Alma (Soportado)</span>
+                            <span id="webBadge" class="text-[10px] text-emerald-400 font-mono">&lambda;<sub>w</sub> &le; &lambda;<sub>r</sub> (OK)</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400 font-code text-[11px]">
+                            <span>Relación &lambda;<sub>w</sub> = <i>h / t<sub>w</sub></i>:</span>
+                            <span id="dispLambdaW" class="text-slate-200 font-bold">0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-400 font-code text-[11px]">
+                            <span>Límite No Esbelto &lambda;<sub>r</sub>:</span>
+                            <span id="dispLambdaRw" class="text-slate-400">0.00</span>
+                        </div>
+                        <p class="text-[10px] text-slate-500 pt-1 border-t border-slate-800/80">Límite &lambda;<sub>r</sub> = 1.49 &radic;(<i>E / F<sub>y</sub></i>) para almas a compresión uniforme.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MODAL DE MEMORIA DE CÁLCULO (EN PANTALLA) Y VISTA DE IMPRESIÓN PDF -->
+    <div id="modalMemoria" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto no-print">
+        <div class="bg-white text-slate-900 w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden border border-slate-300 flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-calculator text-brand-500 text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-base">Memoria de Cálculo Estructural</h3>
+                        <p class="text-xs text-slate-400">Normas Técnicas Complementarias de Acero (NTC-2023)</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="imprimirMemoria()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold rounded-lg transition flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-print"></i> Imprimir / PDF
+                    </button>
+                    <button onclick="cerrarModalMemoria()" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido Modal Scrollable -->
+            <div class="p-6 overflow-y-auto space-y-6 text-xs text-slate-800">
+                <!-- Membrete -->
+                <div class="border-b-2 border-slate-900 pb-3 flex justify-between items-end font-sans">
+                    <div>
+                        <h2 class="text-xl font-black uppercase text-slate-900 tracking-tight">Memoria de Cálculo de Ingeniería</h2>
+                        <p class="text-xs font-semibold text-slate-600">Revisión a Compresión Axial según RCDF NTC-Acero 2023</p>
+                    </div>
+                    <div class="text-right text-[11px] font-mono text-slate-600">
+                        <p><strong>Fecha:</strong> <span id="mDate"></span></p>
+                        <p><strong>Factor de Resistencia F<sub>c</sub>:</strong> 0.90</p>
+                    </div>
+                </div>
+
+                <!-- Section 1 -->
+                <div>
+                    <h4 class="font-bold uppercase text-slate-900 text-xs border-b border-slate-300 pb-1 mb-2">1. Insumos y Propiedades Mecánicas del Perfil</h4>
+                    <div class="grid grid-cols-2 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200 font-mono text-[11px]">
+                        <div class="space-y-1">
+                            <p>Perfil: <strong id="mProfile">-</strong></p>
+                            <p>Grado Acero: <strong id="mSteel">-</strong></p>
+                            <p>Esfuerzo Fluencia F<sub>y</sub>: <strong id="mFy">-</strong> kg/cm²</p>
+                            <p>Módulo Elasticidad E: <strong>2,000,000</strong> kg/cm²</p>
+                            <p>Carga Solicitation P<sub>u</sub>: <strong id="mPu">-</strong> Toneladas</p>
+                        </div>
+                        <div class="space-y-1">
+                            <p>Área A<sub>g</sub>: <strong id="mAg">-</strong> cm²</p>
+                            <p>Radios Giro: r<sub>x</sub> = <strong id="mRx">-</strong> cm | r<sub>y</sub> = <strong id="mRy">-</strong> cm</p>
+                            <p>Longitudes L<sub>x</sub> = <strong id="mLx">-</strong> m | L<sub>y</sub> = <strong id="mLy">-</strong> m</p>
+                            <p>Factores K<sub>x</sub> = <strong id="mKx">-</strong> | K<sub>y</sub> = <strong id="mKy">-</strong></p>
+                            <p>Peralte / Ancho: d = <strong id="mD">-</strong> cm | b<sub>f</sub> = <strong id="mBf">-</strong> cm</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: MathCAD Style Substitutions -->
+                <div class="space-y-4">
+                    <h4 class="font-bold uppercase text-slate-900 text-xs border-b border-slate-300 pb-1">2. Desarrollo Matemático a Dos Niveles (Simbólico / Numérico)</h4>
+                    
+                    <!-- 2.1 Slenderness -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                        <p class="font-bold text-slate-900">2.1 Esbeltez por Pandeo Global:</p>
+                        <p class="font-mono text-[11px] text-slate-700">Ecuación: &lambda; = (K &middot; L) / r</p>
+                        <p class="font-mono text-[11px] font-semibold text-slate-900">
+                            • Eje X: &lambda;<sub>x</sub> = (<span id="mKxVal"></span> &times; <span id="mLxVal"></span> &times; 100) / <span id="mRxVal"></span> = <span id="mSlendX" class="text-brand-600 font-bold"></span>
+                        </p>
+                        <p class="font-mono text-[11px] font-semibold text-slate-900">
+                            • Eje Y: &lambda;<sub>y</sub> = (<span id="mKyVal"></span> &times; <span id="mLyVal"></span> &times; 100) / <span id="mRyVal"></span> = <span id="mSlendY" class="text-brand-600 font-bold"></span>
+                        </p>
+                    </div>
+
+                    <!-- 2.2 Fcr -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                        <p class="font-bold text-slate-900">2.2 Esbeltez Normalizada y Esfuerzo Crítico (Eje Crítico: <span id="mGovAxis"></span>):</p>
+                        <p class="font-mono text-[11px] text-slate-700">Nivel 1 (Simbólico): &lambda;<sub>c</sub> = (K &middot; L / (&pi; &middot; r)) &middot; &radic;(F<sub>y</sub> / E)</p>
+                        <p class="font-mono text-[11px] font-semibold text-slate-900">
+                            Nivel 2 (Sustitución): &lambda;<sub>c</sub> = (<span id="mGovSlend"></span> / &pi;) &middot; &radic;(<span id="mFyVal"></span> / 2,000,000) = <span id="mLambdaC" class="text-brand-600 font-bold"></span>
+                        </p>
+                        <div id="mFormulaBox" class="p-2.5 bg-slate-200 border-l-4 border-slate-800 font-mono text-[11px] font-semibold text-slate-900 my-2">
+                            <!-- Formula substitution dynamically inserted -->
+                        </div>
+                        <p class="font-mono text-[11px] font-bold text-slate-900">
+                            Esfuerzo Crítico Resultante: F<sub>cr</sub> = <span id="mFcr" class="text-brand-600"></span> kg/cm²
+                        </p>
+                    </div>
+
+                    <!-- 2.3 PRc -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2">
+                        <p class="font-bold text-slate-900">2.3 Resistencia Nominal y de Diseño a Compresión Axial:</p>
+                        <p class="font-mono text-[11px] text-slate-700">Nivel 1: P<sub>n</sub> = A<sub>g</sub> &middot; F<sub>cr</sub> &nbsp;|&nbsp; P<sub>Rc</sub> = F<sub>c</sub> &middot; P<sub>n</sub> (con F<sub>c</sub> = 0.90)</p>
+                        <p class="font-mono text-[11px] font-semibold text-slate-900">
+                            Nivel 2: P<sub>n</sub> = <span id="mAgVal"></span> cm² &times; <span id="mFcrVal"></span> kg/cm² = <span id="mPnTon"></span> Ton
+                        </p>
+                        <p class="font-mono text-[11px] font-extrabold text-slate-900">
+                            Resistencia de Diseño: P<sub>Rc</sub> = 0.90 &times; <span id="mPnTon2"></span> Ton = <span id="mPrcTon" class="text-brand-600"></span> Ton
+                        </p>
+                    </div>
+
+                    <!-- 2.4 Local Buckling -->
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1 font-mono text-[11px]">
+                        <p class="font-sans font-bold text-slate-900">2.4 Revisión de Pandeo Local (Ancho-Espesor):</p>
+                        <p>• Patín: &lambda;<sub>f</sub> = b<sub>f</sub> / (2 t<sub>f</sub>) = <span id="mLamF"></span> vs Límite &lambda;<sub>r</sub> = 0.56 &radic;(E/F<sub>y</sub>) = <span id="mLamRf"></span> &rarr; <strong id="mFlangeRes"></strong></p>
+                        <p>• Alma: &lambda;<sub>w</sub> = h / t<sub>w</sub> = <span id="mLamW"></span> vs Límite &lambda;<sub>r</sub> = 1.49 &radic;(E/F<sub>y</sub>) = <span id="mLamRw"></span> &rarr; <strong id="mWebRes"></strong></p>
+                    </div>
+                </div>
+
+                <!-- Dictamen -->
+                <div class="border-2 border-slate-900 p-4 rounded-xl text-center font-sans bg-slate-100">
+                    <span class="text-xs uppercase font-bold text-slate-600 block">Dictamen Final de Ingeniería</span>
+                    <p class="text-sm font-semibold text-slate-800 mt-1">
+                        Factor de Aprovechamiento: &eta; = P<sub>u</sub> / P<sub>Rc</sub> = <span id="mPuFinal"></span> / <span id="mPrcFinal"></span> = <strong id="mEffFinal"></strong>%
+                    </p>
+                    <div id="mDictamenResult" class="text-lg font-black uppercase mt-1">
+                        <!-- Result badge -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IMPRESIÓN DIRECTA PDF AREA -->
+    <div id="printArea" class="hidden print-only p-8 max-w-4xl mx-auto text-black">
+        <div class="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-2xl font-bold uppercase tracking-tight">Memoria de Cálculo Estructural</h1>
+                <h2 class="text-sm font-semibold text-gray-700">Diseño de Columna de Acero a Compresión Axial — NTC-2023 CDMX</h2>
+            </div>
+            <div class="text-right text-xs">
+                <p><strong>Fecha:</strong> <span id="pDate"></span></p>
+                <p><strong>Normativa:</strong> RCDF NTC-Acero 2023</p>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <h3 class="text-sm font-bold uppercase border-b border-gray-400 pb-1 mb-2">1. Datos de Entrada y Propiedades del Perfil</h3>
+            <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+                <div>
+                    <p>Perfil: <span id="pProfile"></span></p>
+                    <p>Acero: <span id="pSteel"></span> (F<sub>y</sub> = <span id="pFy"></span> kg/cm²)</p>
+                    <p>Módulo E: 2,000,000 kg/cm²</p>
+                    <p>Carga P<sub>u</sub>: <span id="pPu"></span> Toneladas</p>
+                </div>
+                <div>
+                    <p>Área A<sub>g</sub>: <span id="pAg"></span> cm²</p>
+                    <p>r<sub>x</sub> = <span id="pRx"></span> cm | r<sub>y</sub> = <span id="pRy"></span> cm</p>
+                    <p>L<sub>x</sub> = <span id="pLx"></span> m | L<sub>y</sub> = <span id="pLy"></span> m</p>
+                    <p>K<sub>x</sub> = <span id="pKx"></span> | K<sub>y</sub> = <span id="pKy"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 space-y-4 text-xs font-mono">
+            <h3 class="text-sm font-bold uppercase border-b border-gray-400 pb-1 font-sans">2. Desarrollo Matemático a Dos Niveles</h3>
+            <div>
+                <p class="font-bold font-sans">2.1 Esbeltez por Pandeo Global:</p>
+                <p>• Eje X-X: &lambda;<sub>x</sub> = (<span id="pKxP"></span> &times; <span id="pLxP"></span> &times; 100) / <span id="pRxP"></span> = <span id="pSlendXP"></span></p>
+                <p>• Eje Y-Y: &lambda;<sub>y</sub> = (<span id="pKyP"></span> &times; <span id="pLyP"></span> &times; 100) / <span id="pRyP"></span> = <span id="pSlendYP"></span></p>
+            </div>
+            <div>
+                <p class="font-bold font-sans">2.2 Esfuerzo Crítico F<sub>cr</sub> (Eje Gobernante: <span id="pGovAxisP"></span>):</p>
+                <p>• &lambda;<sub>c</sub> = (<span id="pGovSlendP"></span> / &pi;) &middot; &radic;(<span id="pFyP"></span> / 2,000,000) = <span id="pLambdaCP"></span></p>
+                <p class="p-2 border border-gray-400 my-1 font-bold bg-gray-50" id="pFormulaP"></p>
+                <p>• F<sub>cr</sub> Resultante: <span id="pFcrP"></span> kg/cm²</p>
+            </div>
+            <div>
+                <p class="font-bold font-sans">2.3 Resistencia de Diseño:</p>
+                <p>• P<sub>n</sub> = <span id="pAgP"></span> cm² &times; <span id="pFcrValP"></span> kg/cm² = <span id="pPnP"></span> Ton</p>
+                <p>• P<sub>Rc</sub> = 0.90 &times; <span id="pPnP2"></span> Ton = <span id="pPrcP"></span> Toneladas</p>
+            </div>
+            <div>
+                <p class="font-bold font-sans">2.4 Pandeo Local:</p>
+                <p>• Patín: &lambda;<sub>f</sub> = <span id="pLamFP"></span> vs &lambda;<sub>r</sub> = <span id="pLamRfP"></span> &rarr; <span id="pFlangeP"></span></p>
+                <p>• Alma: &lambda;<sub>w</sub> = <span id="pLamWP"></span> vs &lambda;<sub>r</sub> = <span id="pLamRwP"></span> &rarr; <span id="pWebP"></span></p>
+            </div>
+        </div>
+
+        <div class="border-2 border-black p-4 text-center my-6">
+            <h4 class="font-bold uppercase text-sm mb-1">Dictamen Final de Ingeniería</h4>
+            <p class="text-xs">
+                Aprovechamiento: &eta; = P<sub>u</sub> / P<sub>Rc</sub> = <span id="pPuFinalP"></span> / <span id="pPrcFinalP"></span> = <strong><span id="pEffFinalP"></span>%</strong>
+            </p>
+            <p id="pDictamenP" class="text-lg font-black uppercase mt-1"></p>
+        </div>
+
+        <div class="mt-16 flex justify-between text-xs text-gray-600 pt-8 border-t border-gray-400">
+            <div class="text-center w-48 border-t border-black pt-1">Firma de Especialista Estructural</div>
+            <div class="text-center w-48 border-t border-black pt-1">Revisión / Verificación</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark-900 border-t border-slate-800 py-3 px-4 lg:px-8 text-center text-xs text-slate-500 no-print">
+        <p>Desarrollado conforme a las <strong>Normas Técnicas Complementarias para Diseño de Estructuras de Acero (NTC-2023)</strong> del RCDF CDMX.</p>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT DEFENSIVA Y MOTOR DE CÁLCULO -->
+    <script>
+        // BASE DE DATOS DE PERFILES IR COMERCIALES
+        const DATABASE_IR = [
+            { name: "IR 152x13.6 (6x9)", peso: 13.6, Ag: 17.3, d: 15.0, bf: 10.0, tf: 0.55, tw: 0.43, rx: 6.17, ry: 2.18 },
+            { name: "IR 203x22.3 (8x15)", peso: 22.3, Ag: 28.4, d: 20.6, bf: 10.2, tf: 0.80, tw: 0.58, rx: 8.41, ry: 2.31 },
+            { name: "IR 254x32.9 (10x22)", peso: 32.9, Ag: 41.9, d: 25.9, bf: 14.6, tf: 0.91, tw: 0.61, rx: 10.8, ry: 3.38 },
+            { name: "IR 305x74.4 (12x50)", peso: 74.4, Ag: 94.8, d: 31.0, bf: 20.5, tf: 1.63, tw: 0.94, rx: 13.2, ry: 4.98 },
+            { name: "IR 356x122.0 (14x82)", peso: 122.0, Ag: 155.0, d: 36.3, bf: 25.6, tf: 2.17, tw: 1.30, rx: 15.4, ry: 6.38 },
+            { name: "IR 406x178.0 (16x120)", peso: 178.0, Ag: 228.0, d: 42.7, bf: 30.7, tf: 2.69, tw: 1.54, rx: 18.0, ry: 7.72 },
+            { name: "IR 457x253.0 (18x170)", peso: 253.0, Ag: 323.0, d: 48.3, bf: 30.9, tf: 3.56, tw: 2.03, rx: 20.1, ry: 7.82 }
+        ];
+
+        let profileMode = 'db';
+
+        window.onload = function() {
+            populateProfileSelect(DATABASE_IR);
+            document.getElementById('profileSelect').value = "IR 305x74.4 (12x50)";
+            calcular();
+        };
+
+        function populateProfileSelect(profiles) {
+            const select = document.getElementById('profileSelect');
+            select.innerHTML = '';
+            profiles.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.name;
+                opt.textContent = `${p.name} — Ag=${p.Ag}cm², rx=${p.rx}cm, ry=${p.ry}cm`;
+                select.appendChild(opt);
+            });
+        }
+
+        function filterProfiles() {
+            const query = document.getElementById('profileSearch').value.toLowerCase().trim();
+            const filtered = DATABASE_IR.filter(p => p.name.toLowerCase().includes(query));
+            populateProfileSelect(filtered);
+            if (filtered.length > 0) {
+                document.getElementById('profileSelect').value = filtered[0].name;
+                calcular();
+            }
+        }
+
+        function setProfileMode(mode) {
+            profileMode = mode;
+            const btnDB = document.getElementById('btnModeDB');
+            const btnCustom = document.getElementById('btnModeCustom');
+            const dbBox = document.getElementById('dbSelectionBox');
+            const customBox = document.getElementById('customProfileBox');
+
+            if (mode === 'db') {
+                btnDB.className = "py-1.5 px-3 text-xs font-medium rounded-lg border bg-brand-600/20 border-brand-500/50 text-brand-400";
+                btnCustom.className = "py-1.5 px-3 text-xs font-medium rounded-lg border bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200";
+                dbBox.classList.remove('hidden');
+                customBox.classList.add('hidden');
+            } else {
+                btnCustom.className = "py-1.5 px-3 text-xs font-medium rounded-lg border bg-brand-600/20 border-brand-500/50 text-brand-400";
+                btnDB.className = "py-1.5 px-3 text-xs font-medium rounded-lg border bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200";
+                customBox.classList.remove('hidden');
+                dbBox.classList.add('hidden');
+            }
+            calcular();
+        }
+
+        function onSelectProfile() {
+            calcular();
+        }
+
+        function onSteelGradeChange() {
+            const val = document.getElementById('steelGrade').value;
+            const inpFy = document.getElementById('inpFy');
+            if (val !== 'custom') {
+                inpFy.value = val;
+            }
+            calcular();
+        }
+
+        function setKPreset(val) {
+            document.getElementById('inpKx').value = val;
+            document.getElementById('inpKy').value = val;
+            calcular();
+        }
+
+        function resetearValores() {
+            document.getElementById('steelGrade').value = "3515";
+            document.getElementById('inpFy').value = "3515";
+            document.getElementById('inpPu').value = "120.0";
+            document.getElementById('inpLx').value = "5.00";
+            document.getElementById('inpLy').value = "5.00";
+            document.getElementById('inpKx').value = "1.00";
+            document.getElementById('inpKy').value = "1.00";
+            setProfileMode('db');
+            document.getElementById('profileSearch').value = "";
+            filterProfiles();
+            document.getElementById('profileSelect').value = "IR 305x74.4 (12x50)";
+            calcular();
+        }
+
+        function abrirModalMemoria() {
+            document.getElementById('modalMemoria').classList.remove('hidden');
+        }
+
+        function cerrarModalMemoria() {
+            document.getElementById('modalMemoria').classList.add('hidden');
+        }
+
+        function imprimirMemoria() {
+            window.print();
+        }
+
+        // =========================================================================
+        // MOTOR PRINCIPAL DE CÁLCULO ESTRUCTURAL (NTC-2023 CDMX)
+        // =========================================================================
+        function calcular() {
+            let Ag, d, bf, tf, tw, rx, ry, peso, profileName;
+
+            if (profileMode === 'db') {
+                const selName = document.getElementById('profileSelect').value;
+                const prof = DATABASE_IR.find(p => p.name === selName) || DATABASE_IR[0];
+                profileName = prof.name;
+                Ag = prof.Ag;
+                d = prof.d;
+                bf = prof.bf;
+                tf = prof.tf;
+                tw = prof.tw;
+                rx = prof.rx;
+                ry = prof.ry;
+                peso = prof.peso;
+            } else {
+                profileName = "Perfil Personalizado";
+                Ag = Math.max(0.1, parseFloat(document.getElementById('inpAg').value) || 94.8);
+                d = Math.max(0.1, parseFloat(document.getElementById('inpD').value) || 31.0);
+                bf = Math.max(0.1, parseFloat(document.getElementById('inpBf').value) || 20.5);
+                tf = Math.max(0.01, parseFloat(document.getElementById('inpTf').value) || 1.63);
+                tw = Math.max(0.01, parseFloat(document.getElementById('inpTw').value) || 0.94);
+                rx = Math.max(0.01, parseFloat(document.getElementById('inpRx').value) || 13.2);
+                ry = Math.max(0.01, parseFloat(document.getElementById('inpRy').value) || 4.98);
+                peso = Math.max(0.1, parseFloat(document.getElementById('inpPeso').value) || 74.4);
+            }
+
+            // Actualizar etiquetas visuales
+            document.getElementById('dispAg').innerText = Ag.toFixed(1);
+            document.getElementById('dispRx').innerText = rx.toFixed(2);
+            document.getElementById('dispRy').innerText = ry.toFixed(2);
+            document.getElementById('dispPeso').innerText = peso.toFixed(1);
+
+            // Insumos de usuario
+            const Fy = Math.max(100, parseFloat(document.getElementById('inpFy').value) || 3515);
+            const Pu = Math.max(0, parseFloat(document.getElementById('inpPu').value) || 0);
+            const Lx = Math.max(0.1, parseFloat(document.getElementById('inpLx').value) || 1.0);
+            const Ly = Math.max(0.1, parseFloat(document.getElementById('inpLy').value) || 1.0);
+            const Kx = Math.max(0.1, parseFloat(document.getElementById('inpKx').value) || 1.0);
+            const Ky = Math.max(0.1, parseFloat(document.getElementById('inpKy').value) || 1.0);
+
+            const E = 2000000;
+            const Fc = 0.90;
+
+            // Pandeo X-X
+            const KLx_cm = Kx * Lx * 100;
+            const slendernessX = KLx_cm / rx;
+            const lambdaCX = (slendernessX / Math.PI) * Math.sqrt(Fy / E);
+            let FcrX = lambdaCX <= 1.5 ? Math.pow(0.658, Math.pow(lambdaCX, 2)) * Fy : (0.877 / Math.pow(lambdaCX, 2)) * Fy;
+            const PrcX_ton = (Fc * Ag * FcrX) / 1000.0;
+
+            // Pandeo Y-Y
+            const KLy_cm = Ky * Ly * 100;
+            const slendernessY = KLy_cm / ry;
+            const lambdaCY = (slendernessY / Math.PI) * Math.sqrt(Fy / E);
+            let FcrY = lambdaCY <= 1.5 ? Math.pow(0.658, Math.pow(lambdaCY, 2)) * Fy : (0.877 / Math.pow(lambdaCY, 2)) * Fy;
+            const PrcY_ton = (Fc * Ag * FcrY) / 1000.0;
+
+            // Eje Gobernante
+            const isYGoverns = slendernessY >= slendernessX;
+            const maxSlenderness = Math.max(slendernessX, slendernessY);
+            const Prc_governing = isYGoverns ? PrcY_ton : PrcX_ton;
+            const governingAxisText = isYGoverns ? "Y-Y (Débil)" : "X-X (Fuerte)";
+
+            const efficiency = Prc_governing > 0 ? (Pu / Prc_governing) * 100 : 999;
+
+            // Pandeo Local
+            const lambdaF = bf / (2 * tf);
+            const lambdaRf = 0.56 * Math.sqrt(E / Fy);
+            const isFlangeOK = lambdaF <= lambdaRf;
+
+            const h_cm = d - 2 * tf;
+            const lambdaW = h_cm / tw;
+            const lambdaRw = 1.49 * Math.sqrt(E / Fy);
+            const isWebOK = lambdaW <= lambdaRw;
+
+            const isLocalBucklingOK = isFlangeOK && isWebOK;
+
+            // ACTUALIZACIÓN DE INTERFAZ DE USUARIO (UI)
+            document.getElementById('tblKlX').innerText = `${KLx_cm.toFixed(0)} cm`;
+            document.getElementById('tblKlY').innerText = `${KLy_cm.toFixed(0)} cm`;
+            document.getElementById('tblSlendernessX').innerText = slendernessX.toFixed(1);
+            document.getElementById('tblSlendernessY').innerText = slendernessY.toFixed(1);
+            
+            document.getElementById('tblSlendernessX').className = !isYGoverns ? "py-2.5 px-3 text-center font-bold text-amber-400 bg-amber-500/10" : "py-2.5 px-3 text-center font-bold text-slate-200";
+            document.getElementById('tblSlendernessY').className = isYGoverns ? "py-2.5 px-3 text-center font-bold text-amber-400 bg-amber-500/10" : "py-2.5 px-3 text-center font-bold text-slate-200";
+
+            document.getElementById('tblLambdaCX').innerText = lambdaCX.toFixed(2);
+            document.getElementById('tblLambdaCY').innerText = lambdaCY.toFixed(2);
+            document.getElementById('tblFcrX').innerText = `${Math.round(FcrX)} kg/cm²`;
+            document.getElementById('tblFcrY').innerText = `${Math.round(FcrY)} kg/cm²`;
+            document.getElementById('tblPrcX').innerText = `${PrcX_ton.toFixed(1)} Ton`;
+            document.getElementById('tblPrcY').innerText = `${PrcY_ton.toFixed(1)} Ton`;
+
+            document.getElementById('governingAxisBadge').innerText = `Eje Crítico: ${governingAxisText}`;
+            document.getElementById('dispPuText').innerText = Pu.toFixed(1);
+            document.getElementById('dispPrcText').innerText = Prc_governing.toFixed(1);
+            document.getElementById('dispEfficiencyText').innerText = `${efficiency.toFixed(1)}%`;
+
+            const effBar = document.getElementById('efficiencyBar');
+            const statusBadge = document.getElementById('statusBadge');
+
+            effBar.style.width = `${Math.min(efficiency, 100)}%`;
+
+            if (maxSlenderness > 200) {
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center gap-1.5";
+                statusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ESBELTEZ EXCEDIDA (KL/r > 200)`;
+                effBar.className = "h-full bg-amber-500 transition-all duration-500";
+                document.getElementById('dispEfficiencyText').className = "text-3xl font-extrabold font-code text-amber-400";
+            } else if (efficiency > 100) {
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-red-500/20 text-red-400 border border-red-500/40 flex items-center gap-1.5";
+                statusBadge.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> SOBRECARGADO (Pu > PRc)`;
+                effBar.className = "h-full bg-red-500 transition-all duration-500";
+                document.getElementById('dispEfficiencyText').className = "text-3xl font-extrabold font-code text-red-400";
+            } else {
+                statusBadge.className = "px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center gap-1.5";
+                statusBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> SATISFACTORIO (OK)`;
+                effBar.className = "h-full bg-emerald-500 transition-all duration-500";
+                document.getElementById('dispEfficiencyText').className = "text-3xl font-extrabold font-code text-emerald-400";
+            }
+
+            document.getElementById('dispLambdaF').innerText = lambdaF.toFixed(2);
+            document.getElementById('dispLambdaRf').innerText = lambdaRf.toFixed(2);
+            document.getElementById('flangeBadge').innerText = isFlangeOK ? "λf ≤ λr (No Esbelto)" : "λf > λr (ESBELTO)";
+            document.getElementById('flangeBadge').className = isFlangeOK ? "text-[10px] text-emerald-400 font-mono" : "text-[10px] text-amber-400 font-mono font-bold";
+
+            document.getElementById('dispLambdaW').innerText = lambdaW.toFixed(2);
+            document.getElementById('dispLambdaRw').innerText = lambdaRw.toFixed(2);
+            document.getElementById('webBadge').innerText = isWebOK ? "λw ≤ λr (No Esbelto)" : "λw > λr (ESBELTO)";
+            document.getElementById('webBadge').className = isWebOK ? "text-[10px] text-emerald-400 font-mono" : "text-[10px] text-amber-400 font-mono font-bold";
+
+            const localStatus = document.getElementById('localBucklingStatus');
+            if (isLocalBucklingOK) {
+                localStatus.innerText = "SECCIÓN NO ESBELTA (OK)";
+                localStatus.className = "text-[10px] px-2 py-0.5 rounded font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            } else {
+                localStatus.innerText = "POSEE ELEMENTOS ESBELTOS";
+                localStatus.className = "text-[10px] px-2 py-0.5 rounded font-mono bg-amber-500/20 text-amber-400 border border-amber-500/30";
+            }
+
+            // RELLENAR DATOS EN MEMORIA DE CÁLCULO
+            const now = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+            const steelText = document.getElementById('steelGrade').options[document.getElementById('steelGrade').selectedIndex].text;
+            const govLambdaC = isYGoverns ? lambdaCY : lambdaCX;
+            const govFcr = isYGoverns ? FcrY : FcrX;
+            const Pn_ton = (Ag * govFcr) / 1000.0;
+
+            // Modal
+            document.getElementById('mDate').innerText = now;
+            document.getElementById('mProfile').innerText = profileName;
+            document.getElementById('mSteel').innerText = steelText;
+            document.getElementById('mFy').innerText = Fy.toLocaleString('es-MX');
+            document.getElementById('mPu').innerText = Pu.toFixed(1);
+            document.getElementById('mAg').innerText = Ag.toFixed(1);
+            document.getElementById('mRx').innerText = rx.toFixed(2);
+            document.getElementById('mRy').innerText = ry.toFixed(2);
+            document.getElementById('mLx').innerText = Lx.toFixed(2);
+            document.getElementById('mLy').innerText = Ly.toFixed(2);
+            document.getElementById('mKx').innerText = Kx.toFixed(2);
+            document.getElementById('mKy').innerText = Ky.toFixed(2);
+            document.getElementById('mD').innerText = d.toFixed(1);
+            document.getElementById('mBf').innerText = bf.toFixed(1);
+
+            document.getElementById('mKxVal').innerText = Kx.toFixed(2);
+            document.getElementById('mLxVal').innerText = Lx.toFixed(2);
+            document.getElementById('mRxVal').innerText = rx.toFixed(2);
+            document.getElementById('mSlendX').innerText = slendernessX.toFixed(1);
+
+            document.getElementById('mKyVal').innerText = Ky.toFixed(2);
+            document.getElementById('mLyVal').innerText = Ly.toFixed(2);
+            document.getElementById('mRyVal').innerText = ry.toFixed(2);
+            document.getElementById('mSlendY').innerText = slendernessY.toFixed(1);
+
+            document.getElementById('mGovAxis').innerText = isYGoverns ? "Y-Y" : "X-X";
+            document.getElementById('mGovSlend').innerText = maxSlenderness.toFixed(1);
+            document.getElementById('mFyVal').innerText = Fy.toLocaleString('es-MX');
+            document.getElementById('mLambdaC').innerText = govLambdaC.toFixed(2);
+
+            const mFormulaBox = document.getElementById('mFormulaBox');
+            if (govLambdaC <= 1.5) {
+                mFormulaBox.innerText = `Ecuación NTC (λc <= 1.5): Fcr = (0.658^(λc²)) * Fy = (0.658^(${govLambdaC.toFixed(2)}²)) * ${Fy} = ${Math.round(govFcr)} kg/cm²`;
+            } else {
+                mFormulaBox.innerText = `Ecuación NTC (λc > 1.5): Fcr = (0.877 / (λc²)) * Fy = (0.877 / (${govLambdaC.toFixed(2)}²)) * ${Fy} = ${Math.round(govFcr)} kg/cm²`;
+            }
+
+            document.getElementById('mFcr').innerText = Math.round(govFcr).toLocaleString('es-MX');
+            document.getElementById('mAgVal').innerText = Ag.toFixed(1);
+            document.getElementById('mFcrVal').innerText = Math.round(govFcr).toLocaleString('es-MX');
+            document.getElementById('mPnTon').innerText = Pn_ton.toFixed(1);
+            document.getElementById('mPnTon2').innerText = Pn_ton.toFixed(1);
+            document.getElementById('mPrcTon').innerText = Prc_governing.toFixed(1);
+
+            document.getElementById('mLamF').innerText = lambdaF.toFixed(2);
+            document.getElementById('mLamRf').innerText = lambdaRf.toFixed(2);
+            document.getElementById('mFlangeRes').innerText = isFlangeOK ? "Cumple (No esbelto)" : "Esbelto";
+
+            document.getElementById('mLamW').innerText = lambdaW.toFixed(2);
+            document.getElementById('mLamRw').innerText = lambdaRw.toFixed(2);
+            document.getElementById('mWebRes').innerText = isWebOK ? "Cumple (No esbelto)" : "Esbelto";
+
+            document.getElementById('mPuFinal').innerText = Pu.toFixed(1);
+            document.getElementById('mPrcFinal').innerText = Prc_governing.toFixed(1);
+            document.getElementById('mEffFinal').innerText = efficiency.toFixed(1);
+
+            const mDictamen = document.getElementById('mDictamenResult');
+            if (maxSlenderness > 200) {
+                mDictamen.innerText = "NO CUMPLE — ESBELTEZ EXCEDIDA (KL/r > 200)";
+                mDictamen.className = "text-lg font-black uppercase mt-1 text-red-600";
+            } else if (efficiency > 100) {
+                mDictamen.innerText = "NO CUMPLE — SECCIÓN SOBRECARGADA (Pu > PRc)";
+                mDictamen.className = "text-lg font-black uppercase mt-1 text-red-600";
+            } else {
+                mDictamen.innerText = "CUMPLE — SECCIÓN ACEPTABLE SEGÚN NTC-2023";
+                mDictamen.className = "text-lg font-black uppercase mt-1 text-emerald-600";
+            }
+
+            // Print view sync
+            document.getElementById('pDate').innerText = now;
+            document.getElementById('pProfile').innerText = profileName;
+            document.getElementById('pSteel').innerText = steelText;
+            document.getElementById('pFy').innerText = Fy.toLocaleString('es-MX');
+            document.getElementById('pPu').innerText = Pu.toFixed(1);
+            document.getElementById('pAg').innerText = Ag.toFixed(1);
+            document.getElementById('pRx').innerText = rx.toFixed(2);
+            document.getElementById('pRy').innerText = ry.toFixed(2);
+            document.getElementById('pLx').innerText = Lx.toFixed(2);
+            document.getElementById('pLy').innerText = Ly.toFixed(2);
+            document.getElementById('pKx').innerText = Kx.toFixed(2);
+            document.getElementById('pKy').innerText = Ky.toFixed(2);
+
+            document.getElementById('pKxP').innerText = Kx.toFixed(2);
+            document.getElementById('pLxP').innerText = Lx.toFixed(2);
+            document.getElementById('pRxP').innerText = rx.toFixed(2);
+            document.getElementById('pSlendXP').innerText = slendernessX.toFixed(1);
+
+            document.getElementById('pKyP').innerText = Ky.toFixed(2);
+            document.getElementById('pLyP').innerText = Ly.toFixed(2);
+            document.getElementById('pRyP').innerText = ry.toFixed(2);
+            document.getElementById('pSlendYP').innerText = slendernessY.toFixed(1);
+
+            document.getElementById('pGovAxisP').innerText = isYGoverns ? "Y-Y" : "X-X";
+            document.getElementById('pGovSlendP').innerText = maxSlenderness.toFixed(1);
+            document.getElementById('pFyP').innerText = Fy.toLocaleString('es-MX');
+            document.getElementById('pLambdaCP').innerText = govLambdaC.toFixed(2);
+            document.getElementById('pFormulaP').innerText = mFormulaBox.innerText;
+
+            document.getElementById('pFcrP').innerText = Math.round(govFcr).toLocaleString('es-MX');
+            document.getElementById('pAgP').innerText = Ag.toFixed(1);
+            document.getElementById('pFcrValP').innerText = Math.round(govFcr).toLocaleString('es-MX');
+            document.getElementById('pPnP').innerText = Pn_ton.toFixed(1);
+            document.getElementById('pPnP2').innerText = Pn_ton.toFixed(1);
+            document.getElementById('pPrcP').innerText = Prc_governing.toFixed(1);
+
+            document.getElementById('pLamFP').innerText = lambdaF.toFixed(2);
+            document.getElementById('pLamRfP').innerText = lambdaRf.toFixed(2);
+            document.getElementById('pFlangeP').innerText = isFlangeOK ? "OK" : "Esbelto";
+
+            document.getElementById('pLamWP').innerText = lambdaW.toFixed(2);
+            document.getElementById('pLamRwP').innerText = lambdaRw.toFixed(2);
+            document.getElementById('pWebP').innerText = isWebOK ? "OK" : "Esbelto";
+
+            document.getElementById('pPuFinalP').innerText = Pu.toFixed(1);
+            document.getElementById('pPrcFinalP').innerText = Prc_governing.toFixed(1);
+            document.getElementById('pEffFinalP').innerText = efficiency.toFixed(1);
+
+            const pDictamen = document.getElementById('pDictamenP');
+            pDictamen.innerText = mDictamen.innerText;
+            pDictamen.className = mDictamen.className;
+        }
+    </script>
+</body>
+</html>
